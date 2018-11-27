@@ -5,12 +5,6 @@ package leds
 
 #include "MysticLight_SDK.h"
 
-DWORD getMaxBrightness() {
-	DWORD b = 0;
-	MLAPI_GetLedMaxBright(L"MSI_VGA", 0, &b);
-	return b;
-}
-
 void TurnOn() {
 	MLAPI_SetLedStyle(L"MSI_VGA", 0, L"No animation");
 	MLAPI_SetLedColor(L"MSI_VGA", 0, 255, 50, 0);
