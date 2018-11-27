@@ -8,25 +8,19 @@ import (
 )
 
 func main() {
+	log.Println("initializing")
 	leds.Init()
-
-	changes := make(chan wts.Message, 100)
-	closeChan := make(chan int)
-
-	wts.Subscribe(changes, closeChan)
 
 	for {
 		select {
-		case msg := <-changes:
-			switch msg.Param {
-			case wts.WTS_SESSION_LOCK:
+		case locked := <-wts.RunMonitor():
+			if locked {
 				log.Println("session locked")
 				leds.TurnOff()
-			case wts.WTS_SESSION_UNLOCK:
+			} else {
 				log.Println("session unlocked")
 				leds.TurnOn()
 			}
-			close(msg.ChanOk)
 		}
 	}
 }
