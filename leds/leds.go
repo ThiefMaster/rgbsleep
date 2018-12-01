@@ -1,7 +1,7 @@
 package leds
 
 /*
-#cgo windows LDFLAGS: -L. MysticLight_SDK.dll
+#cgo windows LDFLAGS: MysticLight_SDK.dll
 
 #include "MysticLight_SDK.h"
 
