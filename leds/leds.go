@@ -17,14 +17,19 @@ void TurnOff() {
 */
 import "C"
 
+var fadeState = make(chan bool)
+
 func Init() {
+	go RunAuraFader(fadeState)
 	C.MLAPI_Initialize()
 }
 
 func TurnOn() {
 	C.TurnOn()
+	fadeState <- true
 }
 
 func TurnOff() {
 	C.TurnOff()
+	fadeState <- false
 }
