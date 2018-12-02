@@ -8,6 +8,7 @@ package wts
 extern void Start();
 */
 import "C"
+import "time"
 
 // https://docs.microsoft.com/en-us/windows/desktop/TermServ/wm-wtssession-change
 const (
@@ -36,5 +37,12 @@ func relayMessage(wParam C.uint) {
 
 func RunMonitor() chan bool {
 	C.Start()
+	// so we don't have to lock/unlock while testing
+	go func() {
+		time.Sleep(5 * time.Second)
+		chanLocked <- false
+		time.Sleep(5 * time.Second)
+		chanLocked <- true
+	}()
 	return chanLocked
 }

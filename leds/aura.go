@@ -58,6 +58,7 @@ import "C"
 
 import (
 	"image/color"
+	"log"
 	"time"
 )
 
@@ -85,8 +86,10 @@ func RunAuraFader(stateChan chan bool) {
 	for {
 		var reverse bool
 		if <-stateChan {
+			log.Println("fade to on")
 			reverse = false
 		} else {
+			log.Println("fade to off")
 			reverse = true
 		}
 		for i := uint8(0); i <= 100; i++ {
@@ -96,6 +99,7 @@ func RunAuraFader(stateChan chan bool) {
 				C.uchar(colorBoard.R), C.uchar(colorBoard.G), C.uchar(colorBoard.B),
 				C.uchar(colorCase.R), C.uchar(colorCase.G), C.uchar(colorCase.B),
 			)
+			log.Printf("step %d: %v | %v", i, colorCase, colorBoard)
 			time.Sleep(10 * time.Millisecond)
 		}
 	}
