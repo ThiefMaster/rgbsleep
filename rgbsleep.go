@@ -8,15 +8,12 @@ import (
 func main() {
 	leds.Init()
 
-	monitor := wts.RunMonitor()
+	lockedChan := wts.RunMonitor()
 	for {
-		select {
-		case locked := <-monitor:
-			if locked {
-				leds.TurnOff()
-			} else {
-				leds.TurnOn()
-			}
+		if <-lockedChan {
+			leds.TurnOff()
+		} else {
+			leds.TurnOn()
 		}
 	}
 }
