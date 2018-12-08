@@ -1,16 +1,29 @@
 package leds
 
 /*
-#cgo windows LDFLAGS: AURA_SDK.dll
-
 #include "AURA_SDK.h"
+
+static EnumerateMbControllerFunc EnumerateMbController;
+static SetMbModeFunc SetMbMode;
+static SetMbColorFunc SetMbColor;
+static GetMbLedCountFunc GetMbLedCount;
 
 static MbLightControl handle;
 static DWORD ledCount;
 static BYTE *colors;
 static BYTE ready;
 
+
+static void initDLL() {
+	HMODULE dll = LoadLibrary("AURA_SDK.dll");
+	EnumerateMbController = (EnumerateMbControllerFunc)GetProcAddress(dll, "EnumerateMbController");
+	SetMbMode = (SetMbModeFunc)GetProcAddress(dll, "SetMbMode");
+	SetMbColor = (SetMbColorFunc)GetProcAddress(dll, "SetMbColor");
+	GetMbLedCount = (GetMbLedCountFunc)GetProcAddress(dll, "GetMbLedCount");
+}
+
 BYTE Init() {
+	initDLL();
 	DWORD count = EnumerateMbController(NULL, 0);
 	if (count != 1) {
 		return 1;
