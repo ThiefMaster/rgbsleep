@@ -22,7 +22,7 @@ static void initDLL() {
 	GetMbLedCount = (GetMbLedCountFunc)GetProcAddress(dll, "GetMbLedCount");
 }
 
-void Init() {
+void InitAura() {
 	initDLL();
 	DWORD count = EnumerateMbController(NULL, 0);
 	if (count != 1) {
@@ -37,7 +37,7 @@ void Init() {
 	ready = 1;
 }
 
-void SetColors(BYTE boardR, BYTE boardG, BYTE boardB, BYTE caseR, BYTE caseG, BYTE caseB) {
+void SetAuraColors(BYTE boardR, BYTE boardG, BYTE boardB, BYTE caseR, BYTE caseG, BYTE caseB) {
 	if (!ready) {
 		return;
 	}
@@ -90,8 +90,18 @@ func fade(from, to color.RGBA, progress uint8, reverse bool) color.RGBA {
 	}
 }
 
+func InitAura() {
+	C.InitAura()
+}
+
+func TurnAuraOn() {
+	C.SetAuraColors(
+		C.uchar(colorOnBoard.R), C.uchar(colorOnBoard.G), C.uchar(colorOnBoard.B),
+		C.uchar(colorOnCase.R), C.uchar(colorOnCase.G), C.uchar(colorOnCase.B),
+	)
+}
+
 func RunAuraFader(stateChan chan bool) {
-	C.Init()
 	for {
 		var reverse bool
 		if <-stateChan {
@@ -102,7 +112,7 @@ func RunAuraFader(stateChan chan bool) {
 		for i := uint8(0); i <= 100; i++ {
 			colorCase := fade(colorOff, colorOnCase, i, reverse)
 			colorBoard := fade(colorOff, colorOnBoard, i, reverse)
-			C.SetColors(
+			C.SetAuraColors(
 				C.uchar(colorBoard.R), C.uchar(colorBoard.G), C.uchar(colorBoard.B),
 				C.uchar(colorCase.R), C.uchar(colorCase.G), C.uchar(colorCase.B),
 			)
