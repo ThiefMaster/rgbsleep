@@ -22,11 +22,11 @@ static void initDLL() {
 	GetMbLedCount = (GetMbLedCountFunc)GetProcAddress(dll, "GetMbLedCount");
 }
 
-BYTE Init() {
+void Init() {
 	initDLL();
 	DWORD count = EnumerateMbController(NULL, 0);
 	if (count != 1) {
-		return 1;
+		return;
 	}
 	MbLightControl *handles = calloc(count, sizeof(MbLightControl));
 	EnumerateMbController(handles, count);
@@ -35,7 +35,6 @@ BYTE Init() {
 	ledCount = GetMbLedCount(handle);
 	colors = calloc(3 * ledCount, sizeof(BYTE));
 	ready = 1;
-	return 0;
 }
 
 void SetColors(BYTE boardR, BYTE boardG, BYTE boardB, BYTE caseR, BYTE caseG, BYTE caseB) {
@@ -92,9 +91,7 @@ func fade(from, to color.RGBA, progress uint8, reverse bool) color.RGBA {
 }
 
 func RunAuraFader(stateChan chan bool) {
-	if res := int(C.Init()); res != 0 {
-		log.Printf("aura init failed: %d\n", res)
-	}
+	C.Init()
 	for {
 		var reverse bool
 		if <-stateChan {
